@@ -65,6 +65,7 @@ router.post("/login", [
   body("password", "Enter valid password").isLength({ min: 5 }),
   body("email", "Enter valid email").isEmail(),
   async (req, res) => {
+    let success = false;
     // Check for validation errors
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -83,9 +84,11 @@ router.post("/login", [
       }
       const passComp = await bcrypt.compare(password, user.password);
       if (!passComp) {
-        return res
-          .status(400)
-          .json({ error: "Please try to login with correct credintials." });
+        success = false;
+        return res.status(400).json({
+          success,
+          error: "Please try to login with correct credintials.",
+        });
       }
 
       const data = {
@@ -94,7 +97,10 @@ router.post("/login", [
         },
       };
       const authToken = jwt.sign({ userid: user._id }, JWT_SECRET);
-      res.json(authToken);
+      success = true;
+      res.json({ success, authToken });
+      // res.json(authToken);
+      // res.json({ authtoken: authToken });
     } catch (error) {
       console.error("Error creating user:", error);
       res.status(500).json({ error: "Internal server error" });

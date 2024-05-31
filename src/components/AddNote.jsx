@@ -52,7 +52,7 @@ const AddNote = ({ noteForEdit, clearNoteForEdit }) => {
                         <label htmlFor="tag" className="form-label">Tag</label>
                         <input type="text" className="form-control" id="tag" name='tag' value={note.tag} autoComplete='false' onChange={handleonChange} />
                     </div>
-                    <button type="submit" className="btn btn-primary" onClick={handleSubmit}>Submit</button>
+                    <button disabled={note.title.length < 5 || note.description.length < 5} type="submit" className="btn btn-primary" onClick={handleSubmit}>Submit</button>
                 </form>
             </div>
         </div>
