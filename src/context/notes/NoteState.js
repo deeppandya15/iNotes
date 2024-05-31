@@ -30,6 +30,8 @@ const NoteState = (props) => {
       },
       body: JSON.stringify({ title, description, tag }),
     });
+    const newNote = await response.json();
+    setnotes(notes.concat(newNote));
   };
 
   const deleteNote = async (id) => {
@@ -49,7 +51,7 @@ const NoteState = (props) => {
     setnotes(newNote);
   };
 
-  const editNote = async (title, description, id) => {
+  const editNote = async (id, title, description, tag) => {
     const response = await fetch(`${host}/api/notes/updatenote/${id}`, {
       method: "PUT",
       headers: {
@@ -57,9 +59,14 @@ const NoteState = (props) => {
         "auth-token":
           "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyaWQiOiI2NjM3MDY3ZmM0YjcyZmI2NzIzOTVhY2IiLCJpYXQiOjE3MTQ4ODIyNDV9.ohXwto4YjXHaWpNFkdmq-e_R2JUkS_AO5vb6UeWOExU",
       },
+      body: JSON.stringify({ title, description, tag }),
     });
-    const json = await response.json();
-    console.log(json);
+    const updatedNote = await response.json();
+
+    const newNotes = notes.map((note) =>
+      note._id === id ? updatedNote : note
+    );
+    setnotes(newNotes); // Update state with edited note
   };
   return React.createElement(
     noteContext.Provider,

@@ -1,33 +1,43 @@
 import React, { useContext, useEffect, useState } from 'react';
 import noteContext from '../context/notes/noteContext';
 
-const AddNote = () => {
-    const context = useContext(noteContext)
-    const { addNote, getNotes } = context
+const AddNote = ({ noteForEdit, clearNoteForEdit }) => {
+    const context = useContext(noteContext);
+    const { addNote, editNote, getNotes } = context;
 
-    const [note, setNote] = useState({ title: "", description: "", tag: "" })
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        // addNote(note)
-        addNote(note.title, note.description, note.tag)
-        // Clear input fields after submission
-        setNote({ title: '', description: '', tag: '' });
-        // getNotes()
-
-    }
-
-    const handleonChange = (e) => {
-        setNote({ ...note, [e.target.name]: e.target.value })
-    }
+    const [note, setNote] = useState({ title: "", description: "", tag: "" });
 
     useEffect(() => {
-        getNotes()
-    }, [])
+        if (noteForEdit) {
+            setNote(noteForEdit);
+        } else {
+            setNote({ title: "", description: "", tag: "" });
+        }
+    }, [noteForEdit]);
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        if (noteForEdit) {
+            editNote(note._id, note.title, note.description, note.tag);
+            clearNoteForEdit();
+        } else {
+            addNote(note.title, note.description, note.tag);
+        }
+        setNote({ title: "", description: "", tag: "" });
+    };
+
+    const handleonChange = (e) => {
+        setNote({ ...note, [e.target.name]: e.target.value });
+    };
+
+    useEffect(() => {
+        getNotes();
+    }, []);
+
 
     return (
         <div>
             <div className='container my-3'>
-                <h2>Add a Note</h2>
+                <h2>{noteForEdit ? "Edit Note" : "Add a Note"}</h2>
                 <form className='my-3'>
                     <div className="mb-3">
                         <label htmlFor="title" className="form-label">Title</label>
