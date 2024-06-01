@@ -18,22 +18,28 @@ router.post(
     body("email", "Enter valid email").isEmail(),
   ],
   async (req, res) => {
+    let success = false;
     try {
       // Check for validation errors
       const errors = validationResult(req);
+      // Log validation errors
+      console.error("Validation errors:", errors.array());
       if (!errors.isEmpty()) {
         // Return validation errors if any
-        return res.status(400).json({ errors: errors.array() });
+        success = false;
+        return res.status(400).json({ success, errors: errors.array() });
       }
 
       // If validation passes, check if user with provided email exists
       let user = await User.findOne({ email: req.body.email });
       console.log(user);
       if (user) {
+        success = false;
         // If user already exists, return an error response
-        return res
-          .status(400)
-          .json({ error: "Sorry User with this email address already exists" });
+        return res.status(400).json({
+          success,
+          error: "Sorry User with this email address already exists",
+        });
       }
       const salt = await bcrypt.genSalt(10);
       console.log("salt===" + salt);
@@ -49,8 +55,9 @@ router.post(
       const authToken = jwt.sign({ userid: user._id }, JWT_SECRET);
       console.log(authToken);
 
+      success = true;
       // Return the newly created user
-      res.json(authToken);
+      res.json({ success, authToken });
     } catch (err) {
       // Handle errors
       console.error("Error creating user:", err);
