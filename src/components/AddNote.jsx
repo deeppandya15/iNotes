@@ -1,7 +1,10 @@
 import React, { useContext, useEffect, useState } from 'react';
 import noteContext from '../context/notes/noteContext';
+import { useNavigate } from 'react-router-dom'
 
-const AddNote = ({ noteForEdit, clearNoteForEdit }) => {
+const AddNote = ({ noteForEdit, clearNoteForEdit, alertshow }) => {
+    // const { alertshow } = props
+    const navigate = useNavigate();
     const context = useContext(noteContext);
     const { addNote, editNote, getNotes } = context;
 
@@ -14,13 +17,16 @@ const AddNote = ({ noteForEdit, clearNoteForEdit }) => {
             setNote({ title: "", description: "", tag: "" });
         }
     }, [noteForEdit]);
+
     const handleSubmit = (e) => {
         e.preventDefault();
         if (noteForEdit) {
             editNote(note._id, note.title, note.description, note.tag);
             clearNoteForEdit();
+            alertshow(" Note Updated Successfully", "success")
         } else {
             addNote(note.title, note.description, note.tag);
+            alertshow(" Note Added Successfully", "success")
         }
         setNote({ title: "", description: "", tag: "" });
     };
@@ -29,10 +35,16 @@ const AddNote = ({ noteForEdit, clearNoteForEdit }) => {
         setNote({ ...note, [e.target.name]: e.target.value });
     };
 
+    // useEffect(() => {
+    //     getNotes();
+    // }, []);
     useEffect(() => {
-        getNotes();
+        if (localStorage.getItem("token")) {
+            getNotes();
+        } else {
+            navigate("/login")
+        }
     }, []);
-
 
     return (
         <div>

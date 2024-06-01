@@ -14,19 +14,30 @@ import SignUp from './components/SignUp';
 
 function App() {
   const [count, setCount] = useState(0)
+  const [alert, setalert] = useState(null);
+
+  const showAlert = (message, type) => {
+    setalert({
+      msg: message,
+      type: type
+    })
+    setTimeout(() => {
+      setalert(null)
+    }, 2000);
+  }
 
   return (
     <NoteState >
       <>
         <Router>
           <Navbar />
-          <Alert />
+          <Alert alert={alert} />
           <div className="container">
             <Routes>
-              <Route exact path='/' element={<Home />}></Route>
+              <Route exact path='/' element={<Home alertshow={showAlert} />}></Route>
               <Route exact path='/About' element={<About />}></Route>
-              <Route exact path='/login' element={<Login />}></Route>
-              <Route exact path='/signUp' element={<SignUp />}></Route>
+              <Route exact path='/login' element={<Login alertshow={showAlert} />}></Route>
+              <Route exact path='/signUp' element={<SignUp alertshow={showAlert} />}></Route>
             </Routes>
           </div>
         </Router>
